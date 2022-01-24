@@ -117,24 +117,24 @@ def prespective_transform(img):
     pts2 = np.float32([[0, img.shape[0]], [img.shape[1], img.shape[0]],
                        [0, 0], [img.shape[1], 0]])
     
-    result = img
-    for pt in pts1:
-        cv2.circle(result, (pt[0], pt[1]), 5, (0, 255, 255), thickness=-1)
+    # result = img
+    # for pt in pts1:
+    #     cv2.circle(result, (pt[0], pt[1]), 5, (0, 255, 255), thickness=-1)
      
     # Apply Perspective Transform Algorithm
-    # matrix = cv2.getPerspectiveTransform(pts1, pts2)
-    # result = cv2.warpPerspective(img, matrix, (img.shape[1], img.shape[0]))
+    matrix = cv2.getPerspectiveTransform(pts1, pts2)
+    result = cv2.warpPerspective(img, matrix, (img.shape[1], img.shape[0]))
     return result
 
 def get_lane_value(img):
     img = cv2.resize(img, None, fx=0.5, fy=0.5)
     #img = cv2.blur(img, (5,5))
 
-    img = prespective_transform(img)
+    # img = prespective_transform(img)
 
     edges = cv2.Canny(img, 75, 150)
 
-    # img = prespective_transform(img)
+    img = prespective_transform(img)
     edges = prespective_transform(edges)
 
     lines = cv2.HoughLinesP(edges, 3, 3 * np.pi/180, 60, maxLineGap=200)
@@ -145,14 +145,14 @@ def get_lane_value(img):
     #     cv2.line(edges, (x1, y1), (x2,y2), (0, 255, 0), thickness=3)
 
     if lines is not None:
-        # left_points, right_points = get_boundaries(img.shape[1], img.shape[0], lines)
-        # polypoints = draw_lane(img, left_points, right_points)
-        # hist_mask = mask_histogram(img, polypoints)
-        # curve = get_curve_val(hist_mask)
+        left_points, right_points = get_boundaries(img.shape[1], img.shape[0], lines)
+        polypoints = draw_lane(img, left_points, right_points)
+        hist_mask = mask_histogram(img, polypoints)
+        curve = get_curve_val(hist_mask)
         if pub is not None:
-            # cv2.putText(img, str(curve), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, 2)
+            cv2.putText(img, str(curve), (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, 2)
             ros_img = CvBridge().cv2_to_imgmsg(img, encoding="bgr8")
             pub.publish(ros_img)
-        # return curve
+        return curve
     else:
         return None   
