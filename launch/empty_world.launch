@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <arg name="x_pose" default="-0.3"/>
+  <arg name="y_pose" default="0.95"/>
+  <arg name="z_pose" default="0.0"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+ <!-- Robots state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+
+  <!-- Starting Joint state publisher node which will publish the joint values   -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find project_2)/robot_description/urdf/base.urdf.xacro" />
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model project_2 -x $(arg x_pose) -y $(arg y_pose) -z $(arg z_pose)" />
+
+</launch>

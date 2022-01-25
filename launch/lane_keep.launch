@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg = "project_2" type="camera_image_subscriber.py" name = "camera_error"/>
+  <node pkg = "project_2" type="move_model.py" name = "movement"/>
+  <!--<node pkg = "project_2" type="pid_controller.py" name = "pid"/>-->
+
+</launch>
